@@ -78,6 +78,13 @@ function loop(looper, id){
   });
 }
 
+function pan(panner, id){
+  $("#" + id).change(function(){
+    var pan = $(this).val();
+    panner.setPosition(pan, 0, 0);
+  });
+}
+
 //FIX VARIABLE NAME CREATION!!!
 function makeSource(bufferList){
   //console.log(counter);
@@ -86,20 +93,22 @@ function makeSource(bufferList){
   //source.buffer = bufferList[counter];
   eval("var source" + counter + "=context.createBufferSource()");
   eval("var gain" + counter + "=context.createGainNode()");
+  eval("var panner" + counter + "=context.createPanner()");
+  eval("panner" + counter + ".panningModel = 1");
   eval("source" + counter + ".buffer=bufferList[counter]");
   eval("console.log('source" + counter +"')");
-  //eval("var source" + counter + "= source");
-  //eval("var gain"   + counter + "= gain");
-  //eval("source" + counter + ".noteOn(0)");
   eval("createMute('mute" + counter + "')");
   eval("createVolume('volume" + counter + "')");
   eval("createLoop('loop" + counter + "')");
+  eval("createPan('pan" + counter + "')");
   eval("mute(gain" + counter + ", 'mute" + counter + "')");
-  //console.log(mute)
   eval("changeVolume(gain" + counter + ", 'volume" + counter + "')");
+  eval("pan(panner" + counter + ", 'pan" + counter + "')");
   eval("loop(source" + counter +", 'loop" + counter + "')");
   eval("source" + counter + ".connect(gain" + counter + ")");
-  eval("gain" + counter + ".connect(masterGain)");
+  //debugger
+  eval("gain" + counter + ".connect(panner"+ counter +")");
+  eval("panner" + counter + ".connect(masterGain)");
   eval("tracks.push(source" + counter + ")");
   eval("window.source" + counter +"=source" + counter);
   eval("window.gain" + counter +"=gain" + counter);
@@ -125,6 +134,11 @@ function createVolume(id){
 function createLoop(id){
   $('<label />', {text: 'Loop'}).appendTo('#controls');
   $('<input />', {'type': 'checkbox', 'id': id}).appendTo('#controls');
+}
+
+function createPan(id){
+  $('<label />', {text: 'Pan'}).appendTo('#controls');
+   $('<input />', {'id': id, 'type': 'range', 'min': '-4', 'max': '4', 'value': '0'}).appendTo('#controls');
 }
 
 
