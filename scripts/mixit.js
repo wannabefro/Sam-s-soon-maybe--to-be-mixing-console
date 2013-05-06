@@ -3,9 +3,11 @@ var context;
 var bufferLoader;
 var counter = 0;
 var tracks = [];
+var tuna;
 
 function init() {
   context = new webkitAudioContext();
+  tuna = new Tuna(context);
   play();
 }
 
