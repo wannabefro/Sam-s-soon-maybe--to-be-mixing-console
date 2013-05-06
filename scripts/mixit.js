@@ -42,6 +42,7 @@ function finishedLoading(bufferList) {
     makeSource(bufferList);
   });
   $("#play").click(function(){
+
     for (var i = 0; i < tracks.length; i++){
       eval("window.source" + i + ".noteOn(0)");
     }
@@ -119,8 +120,30 @@ function makeSource(bufferList){
 function makeMasterFader(){
   masterGain = context.createGainNode();
   masterGain.gain.value = 1;
-  masterGain.connect(context.destination);
+  var compressor = new tuna.Compressor({
+                     threshold: -10,    //-100 to 0
+                     makeupGain: 1,     //0 and up
+                     attack: 1,         //0 to 1000
+                     release: 0,        //0 to 3000
+                     ratio: 10,          //1 to 20
+                     knee: 5,           //0 to 40
+                     automakeup: true,  //true/false
+                     bypass: 1
+                   });
+    $('#buss').change(function(){
+    if($(this).is(':checked')){
+      compressor.bypass = 0;
+      } else {
+        compressor.bypass = 1;}
+
+    });
+  masterGain.connect(compressor.input);
+  compressor.connect(context.destination);
 }
+
+function bussBypass(){
+
+  }
 
 function createMute(id){
   $('<button />', {'id': id, text: 'MUTE'}).appendTo('#controls');
